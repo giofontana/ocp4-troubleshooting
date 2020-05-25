@@ -13,25 +13,26 @@ To do so, you will need to have at least one functional master/etcd server still
 
 Therefore we should run the following tasks:
 
-. Backup one of the remaining funcional master nodes. In our case this will be the server master-0 (etcd-0).
-. Restore backup selecting this as the only etcd member cluster (master-0/etcd-0)
-. Remove other 2 masters nodes (master-1/etcd-1 and master-2/etcd-2)
-. Recreate both machines (master-1 and master-2)
-. Update DNS and LB records 
-. Run etcd tokenize on the remaining funcional master node (master-0/etcd-0)
-. Run etcd-member-recover for both new members (master-1/etcd-1 and master-2/etcd-2)
+. <<ETCD Backup>>: Backup one of the remaining funcional master nodes. In our case this will be the server master-0 (etcd-0).
+. <<Restore backup and etcd cluster>>: Restore backup selecting one etcd member only in the cluster (in our case will be the master-0/etcd-0)
+. <<Remove 2 masters nodes>>: Remove other 2 masters nodes (master-1/etcd-1 and master-2/etcd-2)
+. <<Recreate masters>>: Recreate both machines (master-1 and master-2)
+. <<Update DNS and LB records>>
+. <<Run etcd tokenize>> on the remaining funcional master node (master-0/etcd-0)
+. <<Run etcd-member-recover for new members>> (master-1/etcd-1 and master-2/etcd-2)
 
 Now you already have your cluster of masters entirely functional and recovered. Only to exercise this process a little bit more, we will also replace the first master node (master-0/etcd-0). In order to do that, we will add the following tasks to our procedure:
 
 [start=8]
-. Remove the first etcd (master-0/etcd-0)
-. Recreate the first etcd (master-0/etcd-0)
-. Update DNS and LB records 
-. Run etcd tokenize on one of remaining funcional master node (now can be either master-1/etcd-1 or master-2/etcd-2)
-. Run etcd-member-recover for the new member (master-0/etcd-0)
+. <<Remove the etcd member etcd-0>> (master-0/etcd-0)
+. <<Remove server master-0>>
+. <<Create a new server master-0>> (master-0/etcd-0)
+. <<Update DNS and LB records>>
+. <<Run etcd tokenize>> on one of remaining funcional master node (now can be either master-1/etcd-1 or master-2/etcd-2)
+. <<Run etcd-member-recover for new the member>> (master-0/etcd-0)
 
 
-== Etcd Backup
+== ETCD Backup
 
 The first step we should follow is to have a funcional backup of the cluster etcd. If you lost your entire cluster, you should restore it from an existing etcd backup that you should already have (in this case you already have your backup and you can skip this step). This process is documented in the OpenShift official process.footnote:[https://docs.openshift.com/container-platform/4.3/backup_and_restore/backing-up-etcd.html]
 
@@ -149,7 +150,9 @@ sh-4.2#
 ----
 <1> Change ip-10-0-140-240 for the ip of your master-0
 
-== Remove other 2 masters nodes (master-1/etcd-1 and master-2/etcd-2)
+== Remove 2 masters nodes 
+
+(master-1/etcd-1 and master-2/etcd-2)
 
 Now we should remove problematic master nodes to replace them further. Before deleting them let's export their machine configurations to be used to recreate them.
 
@@ -229,7 +232,9 @@ ip-10-0-148-0.ec2.internal     Ready    worker   86m   v1.16.2
 ip-10-0-161-99.ec2.internal    Ready    worker   86m   v1.16.2
 ----
 
-== Recreate both machines (master-1 and master-2)
+== Recreate masters
+
+(master-1 and master-2)
 
 Now we will use the machine config yaml files that you exported before.
 
@@ -604,7 +609,7 @@ NAME          READY   STATUS    RESTARTS   AGE
 etcd-signer   1/1     Running   0          16s
 ----
 
-== Run etcd-member-recover for new members
+== Run etcd-member-recover for new the member
 
 // TODO: SPEAK ABOUT THE BUG IN etcd-member-recover.sh SCRIPT
 
