@@ -1,6 +1,6 @@
-= How to replace all Masters in an IPI cluster
+= How to Replace All Masters in an OpenShift IPI Cluster
 
-This procedure was created with my friend Rafael Pécora (*@pecorawal*).
+This procedure was created with my friend Rafael Pécora (*link:https://github.com/pecorawal[@pecorawal]*).
 
 [NOTE]
 ====
