@@ -240,9 +240,6 @@ Now we will use the machine config yaml files that you exported before.
 
 *Procedure:*
 ----
-[root@ocp-bastion install]# vi new-master-0.yaml
-# Remove entire "status" section
-# Remove the providerID field
 [root@ocp-bastion install]# vi new-master-1.yaml
 # Remove entire "status" section
 # Remove the providerID field
@@ -546,8 +543,11 @@ ocp-w2lhz-worker-us-east-1c-6zdpt   Running   m4.large    us-east-1   us-east-1c
 
 *Procedure:*
 ----
-[root@ocp-bastion recover-master-2]# cp new-master-1.yaml new-master-0.yaml
-[root@ocp-bastion recover-master-2]# vi new-master-0.yaml # update name and selfLink
+[root@ocp-bastion recover-master-2]# vi new-master-0.yaml
+# Remove entire "status" section
+# Remove the providerID field
+
+[root@ocp-bastion recover-master-2]# oc create -f new-master-0.yaml
 
 # Wait until you get it in Running state:
 [root@ocp-bastion recover-master-2]# oc get machine -n openshift-machine-api 
