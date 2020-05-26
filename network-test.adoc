@@ -1,0 +1,21 @@
+= Using `iperf` to Check the Network Performance Between Two Nodes
+
+This procedure aims to validate the network performance from within OpenShift nodes.
+
+----
+# Create a new project
+oc new-project network-test
+
+# Run iperf server in one of the nodes
+oc run iperf3-server --image=networkstatic/iperf3 -- -s
+oc patch dc/iperf3-server -p '{"spec":{"template":{"spec":{"nodeSelector":{"kubernetes.io/hostname":"app-1.ocp.rh"}}}}}' <1>
+
+# Run iperf client on another nodes
+oc run iperf3-client --image=networkstatic/iperf3 -- -c $(oc get pod -l deploymentconfig=iperf3-server -o custom-columns=IP:.status.podIP --no-headers)
+oc patch dc/iperf3-client -p '{"spec":{"template":{"spec":{"nodeSelector":{"kubernetes.io/hostname":"infra-1.ocp.rh"}}}}}' <2>
+
+# Check the performance report on the logs
+oc logs -f $(oc get pod -l deploymentconfig=iperf3-client -o custom-columns=NAME:.metadata.name --no-headers)
+----
+<1> Node that will host iperf server
+<2> Node that will host iperf client
