@@ -1,6 +1,6 @@
 = Using `iperf` to Check the Network Performance Between Two Nodes
 
-This procedure aims to validate the network performance from within OpenShift nodes.
+This procedure aims to validate the network performance from within OpenShift nodes using `iperf`.
 
 ----
 # Create a new project
