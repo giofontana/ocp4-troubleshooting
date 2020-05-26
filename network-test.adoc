@@ -8,14 +8,33 @@ oc new-project network-test
 
 # Run iperf server in one of the nodes
 oc run iperf3-server --image=networkstatic/iperf3 -- -s
-oc patch dc/iperf3-server -p '{"spec":{"template":{"spec":{"nodeSelector":{"kubernetes.io/hostname":"app-1.ocp.rh"}}}}}' <1>
+oc patch dc/iperf3-server -p '{"spec":{"template":{"spec":{"nodeSelector":{"kubernetes.io/hostname":"ip-10-0-138-182"}}}}}' <1>
 
 # Run iperf client on another nodes
 oc run iperf3-client --image=networkstatic/iperf3 -- -c $(oc get pod -l deploymentconfig=iperf3-server -o custom-columns=IP:.status.podIP --no-headers)
-oc patch dc/iperf3-client -p '{"spec":{"template":{"spec":{"nodeSelector":{"kubernetes.io/hostname":"infra-1.ocp.rh"}}}}}' <2>
+oc patch dc/iperf3-client -p '{"spec":{"template":{"spec":{"nodeSelector":{"kubernetes.io/hostname":"ip-10-0-150-1"}}}}}' <2>
 
 # Check the performance report on the logs
-oc logs -f $(oc get pod -l deploymentconfig=iperf3-client -o custom-columns=NAME:.metadata.name --no-headers)
+[root@ocp-bastion auth]# oc logs -f $(oc get pod -l deploymentconfig=iperf3-client -o custom-columns=NAME:.metadata.name --no-headers)
+Connecting to host 10.128.2.19, port 5201
+[  4] local 10.129.2.17 port 59004 connected to 10.128.2.19 port 5201
+[ ID] Interval           Transfer     Bandwidth       Retr  Cwnd
+[  4]   0.00-1.00   sec   126 MBytes  1.05 Gbits/sec   15    791 KBytes       
+[  4]   1.00-2.00   sec  54.0 MBytes   453 Mbits/sec    0   1.04 MBytes       
+[  4]   2.00-3.00   sec  52.5 MBytes   440 Mbits/sec    1    956 KBytes       
+[  4]   3.00-4.00   sec  53.8 MBytes   451 Mbits/sec    4    852 KBytes       
+[  4]   4.00-5.00   sec  52.5 MBytes   440 Mbits/sec    0   1.08 MBytes       
+[  4]   5.00-6.00   sec  53.8 MBytes   451 Mbits/sec    2   1008 KBytes       
+[  4]   6.00-7.00   sec  52.5 MBytes   440 Mbits/sec    1    852 KBytes       
+[  4]   7.00-8.00   sec  52.5 MBytes   440 Mbits/sec    0   1.09 MBytes       
+[  4]   8.00-9.00   sec  53.8 MBytes   451 Mbits/sec    2   1.01 MBytes       
+[  4]   9.00-10.00  sec  52.5 MBytes   440 Mbits/sec    2    939 KBytes       
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bandwidth       Retr
+[  4]   0.00-10.00  sec   603 MBytes   506 Mbits/sec   27             sender
+[  4]   0.00-10.00  sec   600 MBytes   503 Mbits/sec                  receiver
+
+iperf Done.
 ----
 <1> Node that will host iperf server
 <2> Node that will host iperf client
